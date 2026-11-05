@@ -6,51 +6,45 @@ const META_MENSAL = 60;
 const META_DIARIA = 4;
 
 function salvar() {
-    localStorage.setItem(
-        'chamados',
-        JSON.stringify(dados)
-    );
+    localStorage.setItem('chamados', JSON.stringify(dados));
 }
 
 function atualizarDashboard() {
 
-    let totalConcluidos = 0;
+    let totalConcluidos = dados.reduce(
+        (total, item) => total + Number(item.qtd || 0),
+        0
+    );
 
-    dados.forEach(item => {
-        totalConcluidos += Number(item.qtd) || 0;
-    });
-
-    let pendentes =
-        Math.max(META_MENSAL - totalConcluidos, 0);
+    let pendentes = Math.max(
+        META_MENSAL - totalConcluidos,
+        0
+    );
 
     let percentual =
         (totalConcluidos / META_MENSAL) * 100;
 
-    if (percentual > 100) {
-        percentual = 100;
-    }
+    percentual = Math.min(percentual, 100);
 
-    document.getElementById('total').innerText =
+    document.getElementById('total').textContent =
         META_MENSAL;
 
-    document.getElementById('concluidos').innerText =
+    document.getElementById('concluidos').textContent =
         totalConcluidos;
 
-    document.getElementById('pendentes').innerText =
+    document.getElementById('pendentes').textContent =
         pendentes;
 
-    document.getElementById('percentual').innerText =
+    document.getElementById('percentual').textContent =
         percentual.toFixed(1) + '%';
 
     document.getElementById('barra').style.width =
         percentual + '%';
 
-    document.getElementById('txtProgresso').innerText =
+    document.getElementById('txtProgresso').textContent =
         `${totalConcluidos} de ${META_MENSAL} chamados concluídos`;
 
-    document.getElementById(
-        'ultimaAtualizacao'
-    ).innerText =
+    document.getElementById('ultimaAtualizacao').textContent =
         new Date().toLocaleString('pt-BR');
 
     atualizarTabela();
@@ -60,88 +54,96 @@ function atualizarDashboard() {
 
 function atualizarTabela() {
 
+    const tabela =
+        document.getElementById('tabela');
+
+    if (!tabela) return;
+
+    if (dados.length === 0) {
+
+        tabela.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    Nenhum registro encontrado
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
     let html = '';
 
     dados.forEach((item, indice) => {
 
         let status =
-            item.qtd >= META_DIARIA
+            Number(item.qtd) >= META_DIARIA
                 ? '<span class="ok">✓ Meta atingida</span>'
                 : '<span class="alerta">⚠ Abaixo da meta</span>';
 
         html += `
-        <tr>
+            <tr>
+                <td>${item.data}</td>
+                <td>${item.qtd}</td>
+                <td>${status}</td>
+                <td>
+                    <button
+                        class="btn-editar"
+                        onclick="editarRegistro(${indice})"
+                        title="Editar">
+                        ✏️
+                    </button>
 
-            <td>${item.data}</td>
-
-            <td>${item.qtd}</td>
-
-            <td>${status}</td>
-
-            <td>
-
-                <button
-                    class="btn-editar"
-                    onclick="editarRegistro(${indice})">
-
-                    <i class="fas fa-edit"></i>
-
-                </button>
-
-                <button
-                    class="btn-excluir"
-                    onclick="excluirRegistro(${indice})">
-
-                    <i class="fas fa-trash"></i>
-
-                </button>
-
-            </td>
-
-        </tr>
+                    <button
+                        class="btn-excluir"
+                        onclick="excluirRegistro(${indice})"
+                        title="Excluir">
+                        🗑️
+                    </button>
+                </td>
+            </tr>
         `;
     });
 
-    document.getElementById('tabela').innerHTML =
-        html;
+    tabela.innerHTML = html;
 }
 
 function adicionarRegistro() {
 
-    let data =
+    const data =
         document.getElementById('data').value;
 
-    let qtd =
-        parseInt(
-            document.getElementById('quantidade').value
-        );
+    const qtd = parseInt(
+        document.getElementById('quantidade').value
+    );
 
-    if (!data || isNaN(qtd)) {
+    if (!data) {
+        alert('Informe a data.');
+        return;
+    }
 
-        alert('Preencha todos os campos.');
-
+    if (isNaN(qtd) || qtd < 0) {
+        alert('Informe uma quantidade válida.');
         return;
     }
 
     if (indiceEdicao >= 0) {
 
         dados[indiceEdicao] = {
-            data: data,
-            qtd: qtd
+            data,
+            qtd
         };
 
         indiceEdicao = -1;
 
         document.getElementById('btnSalvar').innerHTML =
-            '<i class="fas fa-save"></i> Atualizar';
+            'Atualizar';
 
     } else {
 
         dados.push({
-            data: data,
-            qtd: qtd
+            data,
+            qtd
         });
-
     }
 
     document.getElementById('data').value = '';
@@ -152,6 +154,13 @@ function adicionarRegistro() {
 
 function editarRegistro(indice) {
 
+    if (
+        indice < 0 ||
+        indice >= dados.length
+    ) {
+        return;
+    }
+
     document.getElementById('data').value =
         dados[indice].data;
 
@@ -161,29 +170,57 @@ function editarRegistro(indice) {
     indiceEdicao = indice;
 
     document.getElementById('btnSalvar').innerHTML =
-        '<i class="fas fa-save"></i> Salvar Alteração';
+        'Salvar Alteração';
 }
 
 function excluirRegistro(indice) {
 
-    if (confirm('Deseja realmente excluir este registro?')) {
-
-        dados.splice(indice, 1);
-
-        atualizarDashboard();
+    if (
+        indice < 0 ||
+        indice >= dados.length
+    ) {
+        return;
     }
+
+    const confirmar = confirm(
+        'Deseja realmente excluir este registro?'
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    dados.splice(indice, 1);
+
+    if (indiceEdicao === indice) {
+        indiceEdicao = -1;
+    }
+
+    atualizarDashboard();
 }
 
 function limparTudo() {
 
-    if (confirm('Deseja apagar todos os registros?')) {
+    const confirmar = confirm(
+        'Deseja apagar todos os registros?'
+    );
 
-        dados = [];
-
-        localStorage.removeItem('chamados');
-
-        atualizarDashboard();
+    if (!confirmar) {
+        return;
     }
+
+    dados = [];
+
+    indiceEdicao = -1;
+
+    localStorage.removeItem('chamados');
+
+    document.getElementById('data').value = '';
+    document.getElementById('quantidade').value = '';
+
+    atualizarDashboard();
 }
 
-atualizarDashboard();
+window.onload = function () {
+    atualizarDashboard();
+};
