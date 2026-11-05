@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Chamados TI</title>
+
+<link rel="stylesheet" href="style.css">
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+
+
+</head>
+
+<body>
+
+<div class="header">
+
+    <div>
+        <h1>Painel de Chamados TI</h1>
+        <p>Acompanhamento e controle da meta</p>
+    </div>
+
+    <div>
+        <h2>William Lima</h2>
+        <p>Analista de TI</p>
+    </div>
+
+</div>
+
+<div class="cards">
+
+    <div class="card azul">
+        <div>
+            <h3>Total de Chamados</h3>
+            <span id="total"></span>
+        </div>
+        <i class="fas fa-headset fa-3x"></i>
+    </div>
+
+    <div class="card verde">
+        <div>
+            <h3>Concluídos</h3>
+            <span id="concluidos">0</span>
+        </div>
+        <i class="fas fa-check-circle fa-3x"></i>
+    </div>
+
+    <div class="card laranja">
+        <div>
+            <h3>Pendentes</h3>
+            <span id="pendentes">0</span>
+        </div>
+        <i class="fas fa-clock fa-3x"></i>
+    </div>
+
+    <div class="card azulescuro">
+        <div>
+            <h3>Meta Diária</h3>
+            <span>4</span>
+        </div>
+        <i class="fas fa-bullseye fa-3x"></i>
+    </div>
+
+</div>
+
+<div class="progresso-box">
+
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+        <h3>Progresso Geral</h3>
+        <h3 id="percentual">0%</h3>
+    </div>
+
+    <div class="barra">
+        <div class="barra-interna" id="barra"></div>
+    </div>
+
+    <p style="margin-top:10px" id="txtProgresso">
+        0 de 0 chamados concluídos
+    </p>
+
+</div>
+
+<div class="main">
+
+    <div class="box">
+
+        <div class="titulo-box">
+            Resumo por Dia
+        </div>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Concluídos</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+
+            <tbody id="tabela"></tbody>
+
+        </table>
+
+    </div>
+
+    <div class="box">
+
+        <div class="titulo-box">
+            Registrar Chamado
+        </div>
+
+        <div class="formulario">
+
+            <label>Data</label>
+            <input type="date" id="data">
+
+            <label>Chamados Concluídos</label>
+            <input type="number" id="quantidade" min="0">
+
+            <button id="btnSalvar"
+                onclick="adicionarRegistro()">
+
+                <i class="fas fa-save"></i>
+                Atualizar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="footer">
+    Última atualização:
+    <span id="ultimaAtualizacao"></span>
+</div>
+
+<script src="script.js"></script> <!-- Script externo-->
+
+</body>
+</html>

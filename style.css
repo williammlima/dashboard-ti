@@ -1,0 +1,194 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:#f4f6f9;
+}
+
+.header{
+    background:#0c2340;
+    color:white;
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    padding:20px;
+}
+
+.card{
+    padding:20px;
+    border-radius:15px;
+    color:white;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.card span{
+    font-size:40px;
+    font-weight:bold;
+}
+
+.azul{
+    background:#0078d4;
+}
+
+.verde{
+    background:#28a745;
+}
+
+.laranja{
+    background:#ff9800;
+}
+
+.azulescuro{
+    background:#0c3170;
+}
+
+.progresso-box{
+    background:white;
+    margin:20px;
+    padding:20px;
+    border-radius:15px;
+}
+
+.barra{
+    height:30px;
+    background:#ddd;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.barra-interna{
+    height:100%;
+    width:0%;
+    background:#0078d4;
+    transition:0.4s;
+}
+
+.main{
+    padding:20px;
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:20px;
+}
+
+.box{
+    background:white;
+    border-radius:15px;
+    overflow:hidden;
+}
+
+.titulo-box{
+    background:#0c2340;
+    color:white;
+    padding:15px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.formulario{
+    padding:20px;
+}
+
+label{
+    display:block;
+    margin-top:10px;
+    font-weight:bold;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+
+button{
+    cursor:pointer;
+}
+
+#btnSalvar{
+    width:100%;
+    margin-top:20px;
+    padding:12px;
+    border:none;
+    background:#0078d4;
+    color:white;
+    border-radius:8px;
+    font-size:16px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#f1f1f1;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:center;
+}
+
+.btn-editar{
+    background:#0d6efd;
+    color:white;
+    border:none;
+    padding:8px 10px;
+    border-radius:5px;
+    margin-right:5px;
+}
+
+.btn-excluir{
+    background:#dc3545;
+    color:white;
+    border:none;
+    padding:8px 10px;
+    border-radius:5px;
+}
+
+.ok{
+    color:green;
+    font-weight:bold;
+}
+
+.alerta{
+    color:#ff9800;
+    font-weight:bold;
+}
+
+.footer{
+    text-align:center;
+    padding:15px;
+    background:#0c2340;
+    color:white;
+    margin-top:20px;
+}
+
+@media(max-width:900px){
+
+    .main{
+        grid-template-columns:1fr;
+    }
+
+    .header{
+        flex-direction:column;
+        gap:10px;
+    }
+
+}
