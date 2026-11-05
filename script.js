@@ -4,6 +4,7 @@ let indiceEdicao = -1;
 
 const META_MENSAL = 60;
 const META_DIARIA = 1;
+const TOTAL_ATIVOS = 60;
 
 function salvar() {
     localStorage.setItem('chamados', JSON.stringify(dados));
@@ -25,7 +26,8 @@ function atualizarDashboard() {
         (totalConcluidos / META_MENSAL) * 100;
 
     percentual = Math.min(percentual, 100);
-
+document.getElementById("totalAtivos").textContent =
+    TOTAL_ATIVOS;
     document.getElementById('total').textContent =
         META_MENSAL;
 
