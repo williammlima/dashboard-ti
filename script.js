@@ -3,7 +3,7 @@ let dados = JSON.parse(localStorage.getItem('chamados')) || [];
 let indiceEdicao = -1;
 
 const META_MENSAL = 60;
-const META_DIARIA = 4;
+const META_DIARIA = 1;
 
 function salvar() {
     localStorage.setItem('chamados', JSON.stringify(dados));
