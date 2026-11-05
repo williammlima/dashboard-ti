@@ -1,4 +1,17 @@
-let dados = JSON.parse(localStorage.getItem('chamados')) || [];
+const STORAGE_KEY = "dashboard_chamados_v1";
+
+let dados = [];
+
+try {
+    const dadosSalvos = localStorage.getItem(STORAGE_KEY);
+
+    if (dadosSalvos) {
+        dados = JSON.parse(dadosSalvos);
+    }
+} catch (erro) {
+    console.error("Erro ao carregar dados:", erro);
+    dados = [];
+}
 
 let indiceEdicao = -1;
 
@@ -7,57 +20,68 @@ const META_DIARIA = 1;
 const TOTAL_ATIVOS = 60;
 
 function salvar() {
-    localStorage.setItem('chamados', JSON.stringify(dados));
+    try {
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(dados)
+        );
+    } catch (erro) {
+        console.error(
+            "Erro ao salvar dados:",
+            erro
+        );
+    }
 }
 
 function atualizarDashboard() {
 
-    let totalConcluidos = dados.reduce(
-        (total, item) => total + Number(item.qtd || 0),
+    const totalConcluidos = dados.reduce(
+        (total, item) =>
+            total + Number(item.qtd || 0),
         0
     );
 
-    let pendentes = Math.max(
+    const pendentes = Math.max(
         META_MENSAL - totalConcluidos,
         0
     );
 
-    let percentual =
-        (totalConcluidos / META_MENSAL) * 100;
+    const percentual = Math.min(
+        (totalConcluidos / META_MENSAL) * 100,
+        100
+    );
 
-    percentual = Math.min(percentual, 100);
-document.getElementById("totalAtivos").textContent =
-    TOTAL_ATIVOS;
-    document.getElementById('total').textContent =
+    document.getElementById("totalAtivos").textContent =
+        TOTAL_ATIVOS;
+
+    document.getElementById("total").textContent =
         META_MENSAL;
 
-    document.getElementById('concluidos').textContent =
+    document.getElementById("concluidos").textContent =
         totalConcluidos;
 
-    document.getElementById('pendentes').textContent =
+    document.getElementById("pendentes").textContent =
         pendentes;
 
-    document.getElementById('percentual').textContent =
-        percentual.toFixed(1) + '%';
+    document.getElementById("percentual").textContent =
+        percentual.toFixed(1) + "%";
 
-    document.getElementById('barra').style.width =
-        percentual + '%';
+    document.getElementById("barra").style.width =
+        percentual + "%";
 
-    document.getElementById('txtProgresso').textContent =
+    document.getElementById("txtProgresso").textContent =
         `${totalConcluidos} de ${META_MENSAL} chamados concluídos`;
 
-    document.getElementById('ultimaAtualizacao').textContent =
-        new Date().toLocaleString('pt-BR');
+    document.getElementById("ultimaAtualizacao").textContent =
+        new Date().toLocaleString("pt-BR");
 
     atualizarTabela();
-
-    salvar();
 }
 
 function atualizarTabela() {
 
     const tabela =
-        document.getElementById('tabela');
+        document.getElementById("tabela");
 
     if (!tabela) return;
 
@@ -70,14 +94,15 @@ function atualizarTabela() {
                 </td>
             </tr>
         `;
+
         return;
     }
 
-    let html = '';
+    let html = "";
 
     dados.forEach((item, indice) => {
 
-        let status =
+        const status =
             Number(item.qtd) >= META_DIARIA
                 ? '<span class="ok">✓ Meta atingida</span>'
                 : '<span class="alerta">⚠ Abaixo da meta</span>';
@@ -90,15 +115,13 @@ function atualizarTabela() {
                 <td>
                     <button
                         class="btn-editar"
-                        onclick="editarRegistro(${indice})"
-                        title="Editar">
+                        onclick="editarRegistro(${indice})">
                         ✏️
                     </button>
 
                     <button
                         class="btn-excluir"
-                        onclick="excluirRegistro(${indice})"
-                        title="Excluir">
+                        onclick="excluirRegistro(${indice})">
                         🗑️
                     </button>
                 </td>
@@ -112,19 +135,19 @@ function atualizarTabela() {
 function adicionarRegistro() {
 
     const data =
-        document.getElementById('data').value;
+        document.getElementById("data").value;
 
     const qtd = parseInt(
-        document.getElementById('quantidade').value
+        document.getElementById("quantidade").value
     );
 
     if (!data) {
-        alert('Informe a data.');
+        alert("Informe a data.");
         return;
     }
 
     if (isNaN(qtd) || qtd < 0) {
-        alert('Informe uma quantidade válida.');
+        alert("Informe uma quantidade válida.");
         return;
     }
 
@@ -137,8 +160,8 @@ function adicionarRegistro() {
 
         indiceEdicao = -1;
 
-        document.getElementById('btnSalvar').innerHTML =
-            'Atualizar';
+        document.getElementById("btnSalvar").innerHTML =
+            '<i class="fas fa-save"></i> Atualizar';
 
     } else {
 
@@ -148,66 +171,52 @@ function adicionarRegistro() {
         });
     }
 
-    document.getElementById('data').value = '';
-    document.getElementById('quantidade').value = '';
+    salvar();
+
+    document.getElementById("data").value = "";
+    document.getElementById("quantidade").value = "";
 
     atualizarDashboard();
 }
 
 function editarRegistro(indice) {
 
-    if (
-        indice < 0 ||
-        indice >= dados.length
-    ) {
-        return;
-    }
-
-    document.getElementById('data').value =
+    document.getElementById("data").value =
         dados[indice].data;
 
-    document.getElementById('quantidade').value =
+    document.getElementById("quantidade").value =
         dados[indice].qtd;
 
     indiceEdicao = indice;
 
-    document.getElementById('btnSalvar').innerHTML =
-        'Salvar Alteração';
+    document.getElementById("btnSalvar").innerHTML =
+        '<i class="fas fa-save"></i> Salvar Alteração';
 }
 
 function excluirRegistro(indice) {
 
     if (
-        indice < 0 ||
-        indice >= dados.length
+        !confirm(
+            "Deseja realmente excluir este registro?"
+        )
     ) {
-        return;
-    }
-
-    const confirmar = confirm(
-        'Deseja realmente excluir este registro?'
-    );
-
-    if (!confirmar) {
         return;
     }
 
     dados.splice(indice, 1);
 
-    if (indiceEdicao === indice) {
-        indiceEdicao = -1;
-    }
+    salvar();
 
     atualizarDashboard();
 }
 
 function limparTudo() {
 
-    const confirmar = confirm(
-        'Deseja apagar todos os registros?'
-    );
-
-    if (!confirmar) {
+    if (
+        !confirm(
+            "Deseja apagar todos os registros?"
+        )
+    ) {
         return;
     }
 
@@ -215,14 +224,14 @@ function limparTudo() {
 
     indiceEdicao = -1;
 
-    localStorage.removeItem('chamados');
+    localStorage.removeItem(STORAGE_KEY);
 
-    document.getElementById('data').value = '';
-    document.getElementById('quantidade').value = '';
+    document.getElementById("data").value = "";
+    document.getElementById("quantidade").value = "";
 
     atualizarDashboard();
 }
 
-window.onload = function () {
+window.addEventListener("load", () => {
     atualizarDashboard();
-};
+});
